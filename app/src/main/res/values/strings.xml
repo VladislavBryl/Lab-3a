@@ -23,4 +23,6 @@
 
     <string name="button_count"> Обчислити </string>
 
+    <string name="count_with_different_fractions"> Обчислити з різними відсотками мутації </string>
+
 </resources>

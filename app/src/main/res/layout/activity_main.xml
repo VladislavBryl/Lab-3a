@@ -168,6 +168,16 @@
             android:gravity="center"
             android:text="@string/button_count" />
 
+        <Button
+            android:id="@+id/button_count_with_different_fractions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_gravity="center"
+            android:textSize="13sp"
+            android:text="@string/count_with_different_fractions"
+            tools:ignore="ButtonStyle,RelativeOverlap" />
+
         <TextView
             android:id="@+id/textview_output_result"
             android:layout_width="match_parent"

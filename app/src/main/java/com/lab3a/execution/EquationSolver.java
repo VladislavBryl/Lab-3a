@@ -4,6 +4,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.lab3a.utils.exception.ItersExceededException;
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,9 +13,29 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EquationSolver {
 
+    private final boolean hasFraction;
+    private double fraction;
+
     private long y;
     private long[] coefficients;
     private long[] roots;
+
+    private int iters;
+    private long time;
+
+    public EquationSolver() {
+
+        this.hasFraction = false;
+
+    }
+
+    public EquationSolver(double fraction) {
+
+        this.hasFraction = true;
+
+        this.fraction = fraction;
+
+    }
 
     private long findMax(long[] array) {
 
@@ -62,7 +84,9 @@ public class EquationSolver {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void solve() {
+    public void solve() throws ItersExceededException {
+
+        this.time = System.nanoTime();
 
         long max_root_value = this.y / this.findMax(this.coefficients) + 1;
         Random random = new Random();
@@ -72,6 +96,8 @@ public class EquationSolver {
         double[] ratios = new double[4];
         boolean rootFound = false;
 
+        this.iters = 0;
+
         for (int i = 0; i < population.length; i++) {
             for (int j = 0; j < population[i].length; j++) {
                 population[i][j] = ThreadLocalRandom.current().nextLong(max_root_value+1);
@@ -79,6 +105,8 @@ public class EquationSolver {
         }
 
         while (!rootFound) {
+
+            this.iters++;
 
             // Фітнес функція
             for (int i = 0; i < fitnesses.length; i++) {
@@ -133,9 +161,18 @@ public class EquationSolver {
 
             // Мутація
             for (int i = 0; i < new_population.length; i++) {
+
                 int index = random.nextInt(new_population[i].length);
+
+                int dif;
+
+                if (this.hasFraction)
+                    dif = (int) Math.ceil(new_population[i][index] * this.fraction);
+                else dif = 1;
+
                 boolean inc = random.nextBoolean();
-                if (inc) new_population[i][index]++; else new_population[i][index]--;
+                if (inc) new_population[i][index] += dif; else new_population[i][index] -= dif;
+
             }
 
             // Нова популяція
@@ -144,13 +181,37 @@ public class EquationSolver {
                         0, new_population[i].length);
             }
 
+            if (this.iters > 1000000) throw new ItersExceededException();
+
         }
+
+        long time = System.nanoTime();
+
+        this.time = time - this.time;
 
     }
 
     public long[] getRoots() {
 
         return this.roots;
+
+    }
+
+    public double getFraction() {
+
+        return this.fraction;
+
+    }
+
+    public int getIters() {
+
+        return this.iters;
+
+    }
+
+    public long getTime() {
+
+        return this.time;
 
     }
 
